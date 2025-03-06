@@ -18,4 +18,4 @@ Route::get('/pays', function () {
     return $pays;
 });
 
-Route::get('articles', [ArticleController::class, 'getArticle']);
+Route::apiResource('articles', ArticleController::class);
