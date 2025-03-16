@@ -44,6 +44,8 @@ class AuthController extends Controller
         ]);
 
         // Création du token d'authentification d useeeerrr====
+        //createToken sert a creer le token 
+        //plainTextToken est utilisé pour renvoye un token plus claire
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -53,7 +55,7 @@ class AuthController extends Controller
 
         } catch (\Exception $message) {
             return response()->json([
-                'ereur' => $message->getMessage(),
+                'Erreur : ' => $message->getMessage(),
             ]);
         }
        
@@ -83,7 +85,7 @@ class AuthController extends Controller
             'password' => 'nullable|min:6|confirmed',
         ]);
 
-        // Update useeeeeeeeeeer
+        // Update useeeere
         $user->update([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
@@ -94,7 +96,7 @@ class AuthController extends Controller
 
         } catch (\Exception $message) {
             return response()->json([
-                "erreur" => $message->getMessage(),
+                "Erreur : " => $message->getMessage(),
             ]);
         }
         
@@ -107,7 +109,7 @@ class AuthController extends Controller
             $user->delete();
             return response()->json(['message' => 'Utilisateur supprimé'], 200);
         } catch (\Exception $message) {
-           return response()->json(['message' => $message->getMessage()], 500);
+           return response()->json(['Erreur : ' => $message->getMessage()], 500);
         }
        
     }
@@ -115,33 +117,32 @@ class AuthController extends Controller
     // LOGIINNN ===========================================================================
     public function login(Request $request)
     {
-        // Validatooooor login avec make
-        $validatedData = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|min:6',
+        // Validatooooor login avec make 
+        $request->validate([
+           'email' => 'required|email', 
+           'password' => 'required|min:6',
         ]);
 
 
-        if ($validatedData->fails()) {
-            return response()->json($validatedData->errors(), 403);
-        }
-
-
-        // Authentification
+        // Authentification ou on recupération des donnees d'authentification (email et mot de passe)
         $Authentification = $request->only(['email', 'password']);
 
 
         try {
-            // Virification de l'authentification
+           // Tentative d'authentification avec les données fournies
+           //Si echec on renvoie l'erreur
         if (!auth()->attempt($Authentification)) {
             return response()->json(['Erreur : ' => 'Email ou mot de passe incorrect'], 403);
         }
 
-        // Création du token d'authentification
+        // Si l'authentification réussie, on récupère l'utilisateur connecté
         $user = auth()->user();
+
+        // Création du token d'authentification pour l'utilisateur
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        // Récupérer l'utilisateur connecté et retourner le token 
+
+        // Récupérer informations-utilisateur connecté et retourner le token 
         return response()->json([
             'access_token' => $token,
             'user' => $user,

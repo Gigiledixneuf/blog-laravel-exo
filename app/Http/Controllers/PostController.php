@@ -10,8 +10,12 @@ class PostController extends Controller
 
     public function index()
     {
-        //$post = Post::orderBy("id","desc")->paginate(10);
+        //
         try {
+            // Utiliser with permet de charger les relations définies dans le modèle
+            //..('user')->.. fait reference à la fonction definie dans le model Post 
+            // get() est utilise pour recup les résultats sous forme de collection.
+            // all() ne prend pas en compte les relations avec with
             $post_all = Post::with('user')->get();
             return response()->json([
                 'Message' => 'Liste recuperee avec success',
@@ -29,6 +33,7 @@ class PostController extends Controller
     {
        
         try {
+            //Validator
             $validationData = $request->validate([
                 "title"=> 'required|max:255',
                 "content"=> 'required',
@@ -40,7 +45,8 @@ class PostController extends Controller
                 "title" => $validationData['title'],
                 "content" => $validationData['content'],
                 "imageUrl" => $validationData['imageUrl'],
-                "user_id" => auth()->user()->id,
+                //recuperer et inserer le post en fonction de l'id de l'utilisateur 
+                "user_id" => auth()->user()->id, 
             ]);
     
             return response()->json([
@@ -51,7 +57,7 @@ class PostController extends Controller
         } catch (\Exception $message) {
             return response()->json([
                 'Erreur : ' => $message->getMessage(),
-            ]);
+            ], 403);
         }
     }
 
@@ -59,7 +65,7 @@ class PostController extends Controller
     public function show(Post $post)
     {
         try {
-            return response()->json($post);
+            return response()->json($post)->with('user');
         } catch (\Exception $message) {
             return response()->json([
                 'Erreur : ' => $message->getMessage(),
