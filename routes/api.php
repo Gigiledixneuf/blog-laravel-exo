@@ -14,6 +14,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Gestion des articles CRUD et autres 
     Route::apiResource('/articles', ArticleController::class);//CRUD
 
+    // Gestion des posts CRUD et autres 
     Route::apiResource('/posts', PostController::class);
     
     // Déconnexion
