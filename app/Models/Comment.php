@@ -12,6 +12,7 @@ class Comment extends Model
         'user_id',
         'post_id', 
         'comment', 
+        'user_name',
     ];
 
     public function user(){

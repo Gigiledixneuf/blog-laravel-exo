@@ -24,6 +24,7 @@ class PostFactory extends Factory
             'content' => fake()->sentence(),
             'imageUrl' => fake()->imageUrl(),
             'user_id' => User::all()->random()->id,
+            'user_name' => User::all()->random()->name,
         ];
     }
 }

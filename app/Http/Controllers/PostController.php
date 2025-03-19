@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class PostController extends Controller
 {
@@ -12,15 +14,12 @@ class PostController extends Controller
     {
         //
         try {
-            // Utiliser with permet de charger les relations définies dans le modèle
-            //..('user')->.. fait reference à la fonction definie dans le model Post 
-            // get() est utilise pour recup les résultats sous forme de collection.
-            // all() ne prend pas en compte les relations avec with
-            $post_all = Post::with('user', 'comments')->get();
+           $post_all = PostResource::collection(Post::all());
             return response()->json([
                 'Message' => 'Liste recuperee avec success',
                 'Post' => $post_all,
         ]);
+
         } catch (\Exception $message) {
             return response()->json([
                 'Erreur : ' => $message->getMessage(),
@@ -47,6 +46,7 @@ class PostController extends Controller
                 "imageUrl" => $validationData['imageUrl'],
                 //recuperer et inserer le post en fonction de l'id de l'utilisateur 
                 "user_id" => auth()->user()->id, 
+                "user_name" => auth()->user()->name,
             ]);
     
             return response()->json([
@@ -116,6 +116,22 @@ class PostController extends Controller
             return response()->json([
                 'Erreur : ' => $message->getMessage(),
             ], 403);
+        }
+    }
+
+    public function postsOfOneUser(){
+        try {
+            // Récupérer uniquement les articles de l'utilisateur connecté
+            $post_all = PostResource::collection(Post::where('user_id', auth()->id())->get());
+    
+            return response()->json([
+                'Post' => $post_all,
+            ]);
+    
+        } catch (\Exception $message) {
+            return response()->json([
+                'Erreur' => $message->getMessage(),
+            ], 500);
         }
     }
 }
