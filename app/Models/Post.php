@@ -24,4 +24,11 @@ class Post extends Model
         //bon en gros cette methode servira a recuperer toutes les infos de l'utilisateur 
         return $this->belongsTo(User::class); 
     }
+    public function comments(){
+        return $this->hasMany(Comment::class);
+    }
+
+    public function categories(){
+        return $this->belongsToMany(Category::class, 'post_category');
+    }
 }

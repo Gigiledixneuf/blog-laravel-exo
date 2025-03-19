@@ -16,7 +16,7 @@ class PostController extends Controller
             //..('user')->.. fait reference à la fonction definie dans le model Post 
             // get() est utilise pour recup les résultats sous forme de collection.
             // all() ne prend pas en compte les relations avec with
-            $post_all = Post::with('user')->get();
+            $post_all = Post::with('user', 'comments')->get();
             return response()->json([
                 'Message' => 'Liste recuperee avec success',
                 'Post' => $post_all,
@@ -65,7 +65,8 @@ class PostController extends Controller
     public function show(Post $post)
     {
         try {
-            return response()->json($post)->with('user');
+            $post->load('user', 'comments');
+            return response()->json($post);
         } catch (\Exception $message) {
             return response()->json([
                 'Erreur : ' => $message->getMessage(),
