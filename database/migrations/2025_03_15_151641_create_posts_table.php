@@ -20,7 +20,7 @@ return new class extends Migration
             // 'foreignId' crée une colonne user_id qui fera référence à la colonne id de la table users.
             // constrained crée une contrainte de clé étrangère, liant user_id à id dans la table users.
             // onDelete('cascade') spécifie que si un utilisateur est supprimé, tous ses posts associés seront également supprimés.
-            $table->foreignId(column:'user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId(column:'user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
