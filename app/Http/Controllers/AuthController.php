@@ -25,6 +25,8 @@ class AuthController extends Controller
        
     }
 
+    
+
     // Methode store==================================================================
     public function store(Request $request)
     {
@@ -172,4 +174,5 @@ class AuthController extends Controller
         }
         
     }
+    
 }

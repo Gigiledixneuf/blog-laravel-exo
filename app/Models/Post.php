@@ -11,7 +11,7 @@ class Post extends Model
     use HasFactory;  // Si tu utilises des factories pour générer des instances de modèles
 
 
-    protected $fillable = ['title', 'content', 'imageUrl', 'user_id'];
+    protected $fillable = ['title', 'content', 'imageUrl', 'user_id', 'user_name'];
 
         //Fonction pour obtenir l'utilisateur associé à ce post.
         //Cela correspond à la clé étrangère 'user_id'.
