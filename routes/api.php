@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +23,10 @@ Route::middleware('auth:sanctum')->group(function () {
     //Gestion CRUD commentaires
     Route::apiResource('/comments', CommentController::class);
 
+    //Gestion CRUD categorys
     Route::apiResource('/categorys', CategoryController::class);
+
+    Route::post('/likePost', [LikeController::class,'store']);
     
     // Déconnexion
     Route::post('/logout', [AuthController::class, 'logout']); // Déconnexion
@@ -32,5 +36,3 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/login', [AuthController::class, 'login']); // Connexion
 // Inscription
 Route::post('/register', [AuthController::class, 'store']); // Inscription
-
-

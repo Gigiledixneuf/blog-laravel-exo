@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
@@ -28,30 +29,27 @@ class PostController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(PostRequest $request)
     {
        
         try {
-            //Validator
-            $validationData = $request->validate([
-                "title"=> 'required|max:255',
-                "content"=> 'required',
-                "imageUrl"=> 'required|max:255',
-            ]
-            );
-    
+           
             $post = Post::create([
-                "title" => $validationData['title'],
-                "content" => $validationData['content'],
-                "imageUrl" => $validationData['imageUrl'],
+                "title" => $request['title'],
+                "content" => $request['content'],
+                "imageUrl" => $request['imageUrl'],
                 //recuperer et inserer le post en fonction de l'id de l'utilisateur 
                 "user_id" => auth()->user()->id, 
                 "user_name" => auth()->user()->name,
             ]);
+
+            $post->categories()->attach($request->category_id);
+            $categories = $post->categories;
     
             return response()->json([
                 'Message' => "Post crée avec success",
                 'post' => $post , //->id,
+                "categories" => $categories,
             ], 200);
     
         } catch (\Exception $message) {
@@ -65,8 +63,7 @@ class PostController extends Controller
     public function show(Post $post)
     {
         try {
-            $post->load('user', 'comments');
-            return response()->json($post);
+            return response()->json(new PostResource($post), 200);
         } catch (\Exception $message) {
             return response()->json([
                 'Erreur : ' => $message->getMessage(),
@@ -76,20 +73,13 @@ class PostController extends Controller
     }
 
 
-    public function update(Request $request, Post $post)
+    public function update(PostRequest $request, Post $post)
     {
         try {
-            $validationData = $request->validate([
-                "title"=> 'required|max:255',
-                "content"=> 'required',
-                "imageUrl"=> 'required|max:255',
-            ]
-            );
-    
             $post->update([
-                "title" => $validationData['title'],
-                "content" => $validationData['content'],
-                "imageUrl" => $validationData['imageUrl'],
+                "title" => $request['title'],
+                "content" => $request['content'],
+                "imageUrl" => $request['imageUrl'],
             ]);
     
             return response()->json([
@@ -122,16 +112,16 @@ class PostController extends Controller
     public function postsOfOneUser(){
         try {
             // Récupérer uniquement les articles de l'utilisateur connecté
-            $post_all = PostResource::collection(Post::where('user_id', auth()->id())->get());
+            $postsOfOneUser = PostResource::collection(Post::where('user_id', auth()->id())->get());
     
             return response()->json([
-                'Post' => $post_all,
+                'Post' => $postsOfOneUser,
             ]);
     
         } catch (\Exception $message) {
             return response()->json([
                 'Erreur' => $message->getMessage(),
-            ], 500);
+            ], 403);
         }
     }
 }
