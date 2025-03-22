@@ -34,6 +34,7 @@ class LikeController extends Controller
             $like->delete();
             return response()->json([
                 "message" => "Like retiré",
+                "Like" => $like,
                 "likes_count" => Like::where('post_id', $postId)->count(),
             ]);
         } else {
@@ -44,6 +45,7 @@ class LikeController extends Controller
             ]);
             return response()->json([
                 "message" => "Like ajouté",
+                "Like" => $like,
                 "likes_count" => Like::where('post_id', $postId)->count(),
             ]);
         }
