@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CommentRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use Illuminate\Http\Request;
@@ -24,22 +25,15 @@ class CommentController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(CommentRequest $request)
     {
         try {
-            //Validator
-            $validationData = $request->validate([
-                "post_id"=> 'required|integer',
-                "comment"=> 'required|string',
-            ]
-            );
-    
+          
             $comment = Comment::create([
                 "user_id" => auth()->user()->id, 
-                "post_id" => $validationData['post_id'],
-                "comment" => $validationData['comment'],
+                "post_id" => $request['post_id'],
+                "comment" => $request['comment'],
                 "user_name" => auth()->user()->name,
-                
             ]);
     
             return response()->json([
@@ -58,8 +52,7 @@ class CommentController extends Controller
     public function show(Comment $comment)
     {
         try {
-            $comment->load('user');
-            return response()->json(["Comment : " => $comment], 200);
+            return response()->json(new CommentResource($comment), 200);
         } catch (\Exception $message) {
             return response()->json(["Erreur :" => $message->getMessage()], 403);
         }
@@ -67,16 +60,12 @@ class CommentController extends Controller
     }
 
   
-    public function update(Request $request, Comment $comment)
+    public function update(CommentRequest $request, Comment $comment)
     {
         try {
-            $validationData = $request->validate([
-                "comment"=> 'required|string',
-            ]
-            );
-    
+          
             $comment->update([
-                "comment" => $validationData['comment']
+                "comment" => $request['comment']
             ]);
     
             return response()->json([

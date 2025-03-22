@@ -2,45 +2,36 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         try {
             $categories = CategoryResource::collection(Category::all());
-            return response ()->json($categories);
+            return response ()->json($categories, 200);
         } catch (\Exception $message) {
-            return response()->json(["message"=> $message->getMessage()]);
+            return response()->json(["Erreur : "=> $message->getMessage()], 403);
         }
     }
 
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
         try {
-            //Validator
-            $validationData = $request->validate([
-                "name"=> 'required',
-                "description"=> 'required',
-            ]
-            );
-    
             $category = Category::create([
-                "name" => $validationData['name'],
-                "description" => $validationData['description'],
-                
+                "name" => $request['name'],
+                "description" => $request['description'],
             ]);
     
             return response()->json([
                 'Message' => "Category ajouté avec success",
                 'Category :' => $category ,
-            ], 200);
+            ], 201);
     
         } catch (\Exception $message) {
             return response()->json([
@@ -52,32 +43,31 @@ class CategoryController extends Controller
    
     public function show(Category $category)
     {
-        //
+        try {
+            return response()->json(new CategoryResource($category), 200);
+        } catch (\Exception $message) {
+            return response()->json([
+                "Erreur :" => $message->getMessage(),
+            ]);
+        }
+        
     }
+    
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Category $category)
+
+    public function update(CategoryRequest $request, Category $category)
     {
         try {
-            //Validator
-            $validationData = $request->validate([
-                "name"=> 'required',
-                "description"=> 'required',
-            ]
-            );
-    
+            
             $category->update([
-                "name" => $validationData['name'],
-                "description" => $validationData['description'],
-                
+                "name" => $request['name'],
+                "description" => $request['description'],
             ]);
     
             return response()->json([
                 'Message' => "Category modifié avec success",
                 'Category :' => $category ,
-            ], 200);
+            ], 201);
     
         } catch (\Exception $message) {
             return response()->json([
@@ -86,9 +76,7 @@ class CategoryController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(Category $category)
     {
         try {
@@ -100,4 +88,5 @@ class CategoryController extends Controller
             ], 403);
         }
     }
+
 }

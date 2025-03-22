@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -28,21 +30,14 @@ class AuthController extends Controller
     
 
     // Methode store==================================================================
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
         try {
-             // Validatooooooooor ======
-        $validatedData = $request->validate([
-            'name' => 'required|max:255',
-            'email' => 'required|email|unique:users|max:255',
-            'password' => 'required|min:6|confirmed',
-        ]);
-
         // Création userss ========
         $user = User::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => Hash::make($validatedData['password']),
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password']),
         ]);
 
         // Création du token d'authentification d useeeerrr====
@@ -58,7 +53,7 @@ class AuthController extends Controller
         } catch (\Exception $message) {
             return response()->json([
                 'Erreur : ' => $message->getMessage(),
-            ]);
+            ], 403);
         }
        
     }
@@ -67,39 +62,33 @@ class AuthController extends Controller
     public function show(User $user)
     {
         try {
-            return response()->json($user);
+            return response()->json($user, 200);
         } catch (\Exception $message) {
             return response()->json([
                 'Erreur : '=> $message->getMessage(),
-            ]);
+            ], 403);
         }
         
     }
 
     // MAJ useeeer ==================================================================
-    public function update(Request $request, User $user)
+    public function update(UserRequest $request, User $user)
     {
         try {
-            // Validatooooor update
-        $validatedData = $request->validate([
-            'name' => 'required|max:255',
-            'email' => 'required|email|unique:users,email,'.$user->id,
-            'password' => 'nullable|min:6|confirmed',
-        ]);
 
         // Update useeeere
         $user->update([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => $validatedData['password'] ? Hash::make($validatedData['password']) : $user->password,
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => $request['password'] ? Hash::make($request['password']) : $user->password,
         ]);
 
-        return response()->json($user);
+        return response()->json($user, 201);
 
         } catch (\Exception $message) {
             return response()->json([
                 "Erreur : " => $message->getMessage(),
-            ]);
+            ], 403);
         }
         
     }
@@ -109,22 +98,16 @@ class AuthController extends Controller
     {
         try {
             $user->delete();
-            return response()->json(['message' => 'Utilisateur supprimé'], 200);
+            return response()->json(['message' => 'Utilisateur supprimé'], 201);
         } catch (\Exception $message) {
-           return response()->json(['Erreur : ' => $message->getMessage()], 500);
+           return response()->json(['Erreur : ' => $message->getMessage()], 403);
         }
        
     }
 
     // LOGIINNN ===========================================================================
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        // Validatooooor login avec make 
-        $request->validate([
-           'email' => 'required|email', 
-           'password' => 'required|min:6',
-        ]);
-
 
         // Authentification ou on recupération des donnees d'authentification (email et mot de passe)
         $Authentification = $request->only(['email', 'password']);
@@ -149,7 +132,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'user' => $user,
             'message' => 'Connexion réussie',
-        ], 200);
+        ], 201);
 
         } catch (\Exception $message) {
             return response()->json([

@@ -7,6 +7,7 @@ use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Hash;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -19,12 +20,13 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         // User::factory()->create([
-        //     'name' => 'Gigi',
-        //     'email' => 'gigi@example.com',
+        //     'name' => 'Dixneuf 19',
+        //     'email' => 'dixneuf@gmail.com',
+        //     'password'=> Hash::make('dixneuf19'),
         // ]);
 
         
-        // $this->call(PostSeeder::class);
+        //$this->call(PostSeeder::class);
         // $this->call(CategorySeeder::class);
         $this->call(CommentSeeder::class);
     }

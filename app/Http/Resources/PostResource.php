@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Like;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -25,7 +26,7 @@ class PostResource extends JsonResource
 
             //relations avec with
             "Comments"=> CommentResource::collection($this->comments),
-            "Categories"=> $this->categories
+            "Categories"=> $this->categories,
         ];  
     }
 }

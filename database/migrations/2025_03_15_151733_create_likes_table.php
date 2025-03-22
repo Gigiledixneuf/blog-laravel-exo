@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId(column:'user_id')->constrained('users')->onDelete('cascade');
             //liason a la table posts par son id
             $table->foreignId(column:'post_id')->constrained('posts')->onDelete('cascade');
-            $table->integer(column:'likes');
             $table->timestamps();
         });
     }
