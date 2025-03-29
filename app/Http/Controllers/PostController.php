@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PostRequest;
+use App\Http\Resources\CommentResource;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
@@ -17,9 +18,8 @@ class PostController extends Controller
         try {
            $post_all = PostResource::collection(Post::all());
             return response()->json([
-                'Message' => 'Liste recuperee avec success',
-                'Post' => $post_all,
-        ]);
+                'data' =>  $post_all
+            ]);
 
         } catch (\Exception $message) {
             return response()->json([
@@ -31,62 +31,75 @@ class PostController extends Controller
 
     public function store(PostRequest $request)
     {
-       
         try {
-           
+
             $post = Post::create([
                 "title" => $request['title'],
                 "content" => $request['content'],
                 "imageUrl" => $request['imageUrl'],
-                //recuperer et inserer le post en fonction de l'id de l'utilisateur 
-                "user_id" => auth()->user()->id, 
-                "user_name" => auth()->user()->name,
+                //recuperer et inserer le post en fonction de l'id de l'utilisateur
+                "user_id" => auth()->user()->id
             ]);
 
-            $post->categories()->attach($request->category_id);
-            $categories = $post->categories;
-    
+            $post->categories()->attach($request->categories);
+            $post->tags()->attach($request->tags);
+
+            $post->load('categories', 'tags');
+
             return response()->json([
-                'Message' => "Post crée avec success",
-                'post' => $post , //->id,
-                "categories" => $categories,
+                'data' => $post,
             ], 200);
-    
+
         } catch (\Exception $message) {
             return response()->json([
                 'Erreur : ' => $message->getMessage(),
             ], 403);
         }
     }
-
 
     public function show(Post $post)
     {
         try {
-            return response()->json(new PostResource($post), 200);
+            // Charger les commentaires
+            $post->load('comments');
+
+            // Transformer les données avec PostResource et CommentResource
+            $formattedPost = new PostResource($post);
+            $comments = CommentResource::collection($post->comments);
+
+            return response()->json([
+                'data' => [
+                    'post' => $formattedPost,
+                    'comments' => $comments
+                ]
+            ], 200);
         } catch (\Exception $message) {
             return response()->json([
                 'Erreur : ' => $message->getMessage(),
-            ], 403);
+            ], 500);
         }
-        
-    }
 
+    }
 
     public function update(PostRequest $request, Post $post)
     {
         try {
+            // Vérifiez si l'utilisateur authentifié est l'auteur du post
+            if (auth()->user()->id !== $post->user_id) {
+                return response()->json([
+                    'Erreur' => 'Seul l\'auteur peut modifier ce post.',
+                ], 403);
+            }
             $post->update([
                 "title" => $request['title'],
                 "content" => $request['content'],
                 "imageUrl" => $request['imageUrl'],
             ]);
-    
+
             return response()->json([
-                'Message' => "Post modfié avec success",
-                'Post modifié' => $post , //->id,
+                'post' => $post , //->id,
             ], 200);
-    
+
         } catch (\Exception $message) {
             return response()->json([
                 'Erreur : ' => $message->getMessage(),
@@ -98,14 +111,22 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         try {
+            // Vérifiez si l'utilisateur authentifié est l'auteur du post
+            if (auth()->user()->id !== $post->user_id) {
+                return response()->json([
+                    'Erreur' => 'Vous n\'êtes pas autorisé à supprimer ce post.',
+                ], 403);
+            }
+
+            // Supprimer le post
             $post->delete();
             return response()->json([
-                'Message' => "Post supprimé avec success",
+                'Message' => 'Post supprimé avec succès',
             ], 200);
-        } catch (\Exception $message) {
+        } catch (\Exception $e) {
             return response()->json([
-                'Erreur : ' => $message->getMessage(),
-            ], 403);
+                'Erreur' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -113,15 +134,64 @@ class PostController extends Controller
         try {
             // Récupérer uniquement les articles de l'utilisateur connecté
             $postsOfOneUser = PostResource::collection(Post::where('user_id', auth()->id())->get());
-    
+
             return response()->json([
-                'Post' => $postsOfOneUser,
+                "data" => $postsOfOneUser
             ]);
-    
+
         } catch (\Exception $message) {
             return response()->json([
                 'Erreur' => $message->getMessage(),
             ], 403);
         }
     }
+
+    public function postsOfOneCategory()
+    {
+        try {
+            // Récupérer l'ID de la catégorie depuis la requête
+            $categoryId = request('category_id');
+
+            // Vérifier si l'ID de la catégorie est présent
+            if (!$categoryId) {
+                return response()->json(['error' => 'Category ID is required'], 400);
+            }
+
+            // Récupérer les articles associés à la catégorie spécifiée
+            $posts = Post::whereHas('categories', function ($query) use ($categoryId) {
+                $query->where('categories.id', $categoryId);
+            })->get();
+
+            // Formater la collection d'articles
+            $postCollection = PostResource::collection($posts);
+
+            return response()->json([
+                "data" => $postCollection
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function latestPosts()
+    {
+        try {
+            $latestPosts = Post::latest()->take(5)->get();
+            $posts = PostResource::collection($latestPosts);
+
+            // Retourner la réponse JSON
+            return response()->json([
+                "data" => $posts
+            ]);
+        } catch (\Exception $message) {
+            return response()->json([
+                'error' => $message->getMessage(),
+            ], 500);
+        }
+    }
+
+
 }

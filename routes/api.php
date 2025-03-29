@@ -8,29 +8,36 @@ use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
 
-// Dans un router group pour les routes protégées en gros 
+// Dans un router group pour les routes protégées en gros
 Route::middleware('auth:sanctum')->group(function () {
     // CRUD des utilisateurs
     Route::apiResource('/users', AuthController::class);
 
-    // Recuperer les posts de l'utilisateur connecté
-    Route::get('/postOneUser', [PostController::class, 'postsOfOneUser']);
-    Route::get('/commentOneUser', [CommentController::class, 'postsOfOneUser']);
 
-    // Gestion des posts CRUD et autres 
+
+
+    // Gestion des posts CRUD et autres
     Route::apiResource('/posts', PostController::class);
+    Route::get('/postOneUser', [PostController::class, 'postsOfOneUser']);
+    Route::get('/latestPosts', [PostController::class, 'latestPosts']);
+    Route::get('/postOnecategory', [PostController::class, 'postsOfOneCategory']);
+    Route::post('/likePost', [LikeController::class,'store']);
 
     //Gestion CRUD commentaires
     Route::apiResource('/comments', CommentController::class);
+    Route::get('/commentOneUser', [CommentController::class, 'commentOfOneUser']);
 
-    //Gestion CRUD categorys
-    Route::apiResource('/categorys', CategoryController::class);
+    //Gestion CRUD categories
+    Route::apiResource('/categories', CategoryController::class);
 
-    Route::post('/likePost', [LikeController::class,'store']);
-    
+    //Gestion Tags
+    Route::apiResource('/tags', \App\Http\Controllers\TagController::class);
+
+
     // Déconnexion
     Route::post('/logout', [AuthController::class, 'logout']); // Déconnexion
 });
+
 
 // Connexion
 Route::post('/login', [AuthController::class, 'login']); // Connexion

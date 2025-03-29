@@ -20,14 +20,14 @@ class AuthController extends Controller
     {
         try {
             $users = User::all();
-            return response()->json($users);
+            return response()->json([
+                'data' => $users
+            ]);
         } catch (\Exception $message) {
             return response()->json(["Erreur : "=> $message->getMessage()]);
         }
-       
-    }
 
-    
+    }
 
     // Methode store==================================================================
     public function store(UserRequest $request)
@@ -41,13 +41,13 @@ class AuthController extends Controller
         ]);
 
         // Création du token d'authentification d useeeerrr====
-        //createToken sert a creer le token 
+        //createToken sert a creer le token
         //plainTextToken est utilisé pour renvoye un token plus claire
         $token = $user->createToken('auth_token')->plainTextToken;
+        $user=['token' => $token, 'user' => $user];
 
         return response()->json([
-            'access_token' => $token,
-            'user' => $user,
+            'data' => $user
         ], 201);
 
         } catch (\Exception $message) {
@@ -55,7 +55,7 @@ class AuthController extends Controller
                 'Erreur : ' => $message->getMessage(),
             ], 403);
         }
-       
+
     }
 
     // Geeet one userr===============================================================
@@ -68,7 +68,7 @@ class AuthController extends Controller
                 'Erreur : '=> $message->getMessage(),
             ], 403);
         }
-        
+
     }
 
     // MAJ useeeer ==================================================================
@@ -83,14 +83,16 @@ class AuthController extends Controller
             'password' => $request['password'] ? Hash::make($request['password']) : $user->password,
         ]);
 
-        return response()->json($user, 201);
+        return response()->json([
+            'data' => $user
+            ], 201);
 
         } catch (\Exception $message) {
             return response()->json([
                 "Erreur : " => $message->getMessage(),
             ], 403);
         }
-        
+
     }
 
     // methode deleetee===================================================================
@@ -102,7 +104,7 @@ class AuthController extends Controller
         } catch (\Exception $message) {
            return response()->json(['Erreur : ' => $message->getMessage()], 403);
         }
-       
+
     }
 
     // LOGIINNN ===========================================================================
@@ -127,7 +129,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
 
-        // Récupérer informations-utilisateur connecté et retourner le token 
+        // Récupérer informations-utilisateur connecté et retourner le token
         return response()->json([
             'access_token' => $token,
             'user' => $user,
@@ -139,14 +141,15 @@ class AuthController extends Controller
                 'Erreur : ' => $message->getMessage(),
             ], 403);
         }
-        
+
     }
 
     // Logout ou deconnexiooon ================================================================
     public function logout(Request $request)
     {
-        //suppression du token 
+        //suppression du token
         //currentAccessToken = token en cours et Supprime uniquement le token de la requête
+        //tokens = tous les tokens de la requête
         try {
             $request->user()->currentAccessToken()->delete();
             return response()->json(['message' => 'Déconnexion réussie'], 200);
@@ -155,7 +158,6 @@ class AuthController extends Controller
                 'Erreur : '=> $message->getMessage(),
             ], 403);
         }
-        
     }
-    
+
 }
