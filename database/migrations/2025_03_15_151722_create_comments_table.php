@@ -18,7 +18,6 @@ return new class extends Migration
             //liason a la table posts par son id
             $table->foreignId(column:'post_id')->constrained('posts')->onDelete('cascade')->onUpdate('cascade');
             $table->text(column:'comment');
-            $table->string('user_name');
             $table->timestamps();
         });
     }

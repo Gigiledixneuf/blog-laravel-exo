@@ -24,8 +24,9 @@ class PostRequest extends FormRequest
         return [
             "title"=> 'required|unique:posts',
             "content"=> 'required',
-            "imageUrl"=> 'required',
-            "category_id"=> "required", "exists:categories,id",
+            "imageUrl"=> 'required|url',
+            "categories"=> "required", "array",
+            "tags"=> "required", "array",
         ];
     }
 }

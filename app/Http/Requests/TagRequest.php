@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LikeRequest extends FormRequest
+class TagRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,8 @@ class LikeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "post_id"=> "required|exists:posts,id",
+            'name' => 'required|unique:tags',
+            'description' => 'required',
         ];
     }
 }
