@@ -13,9 +13,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // CRUD des utilisateurs
     Route::apiResource('/users', AuthController::class);
 
-
-
-
     // Gestion des posts CRUD et autres
     Route::apiResource('/posts', PostController::class);
     Route::get('/postOneUser', [PostController::class, 'postsOfOneUser']);
@@ -32,7 +29,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Gestion Tags
     Route::apiResource('/tags', \App\Http\Controllers\TagController::class);
-
 
     // Déconnexion
     Route::post('/logout', [AuthController::class, 'logout']); // Déconnexion
