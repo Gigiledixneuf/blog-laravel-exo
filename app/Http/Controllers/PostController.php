@@ -23,7 +23,7 @@ class PostController extends Controller
 
         } catch (\Exception $message) {
             return response()->json([
-                'Erreur : ' => $message->getMessage(),
+                'error' => $message->getMessage(),
             ]);
         }
     }
@@ -52,7 +52,7 @@ class PostController extends Controller
 
         } catch (\Exception $message) {
             return response()->json([
-                'Erreur : ' => $message->getMessage(),
+                'error' => $message->getMessage(),
             ], 403);
         }
     }
@@ -75,7 +75,7 @@ class PostController extends Controller
             ], 200);
         } catch (\Exception $message) {
             return response()->json([
-                'Erreur : ' => $message->getMessage(),
+                'error' => $message->getMessage(),
             ], 500);
         }
 
@@ -102,8 +102,8 @@ class PostController extends Controller
 
         } catch (\Exception $message) {
             return response()->json([
-                'Erreur : ' => $message->getMessage(),
-            ], 403);
+                'error' => $message->getMessage(),
+            ], 500);
         }
     }
 
@@ -114,18 +114,18 @@ class PostController extends Controller
             // Vérifiez si l'utilisateur authentifié est l'auteur du post
             if (auth()->user()->id !== $post->user_id) {
                 return response()->json([
-                    'Erreur' => 'Vous n\'êtes pas autorisé à supprimer ce post.',
+                    'error' => 'Vous n\'êtes pas autorisé à supprimer ce post.',
                 ], 403);
             }
 
             // Supprimer le post
             $post->delete();
             return response()->json([
-                'Message' => 'Post supprimé avec succès',
+                'message' => 'Post supprimé avec succès',
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'Erreur' => $e->getMessage(),
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -141,8 +141,8 @@ class PostController extends Controller
 
         } catch (\Exception $message) {
             return response()->json([
-                'Erreur' => $message->getMessage(),
-            ], 403);
+                'error' => $message->getMessage(),
+            ], 500);
         }
     }
 
@@ -182,7 +182,6 @@ class PostController extends Controller
             $latestPosts = Post::latest()->take(5)->get();
             $posts = PostResource::collection($latestPosts);
 
-            // Retourner la réponse JSON
             return response()->json([
                 "data" => $posts
             ]);
@@ -192,6 +191,5 @@ class PostController extends Controller
             ], 500);
         }
     }
-
 
 }

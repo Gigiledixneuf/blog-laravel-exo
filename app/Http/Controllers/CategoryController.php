@@ -36,8 +36,8 @@ class CategoryController extends Controller
 
         } catch (\Exception $message) {
             return response()->json([
-                'Erreur : ' => $message->getMessage(),
-            ], 403);
+                'error' => $message->getMessage(),
+            ], 500);
         }
     }
 
@@ -48,7 +48,7 @@ class CategoryController extends Controller
             return response()->json(new CategoryResource($category), 200);
         } catch (\Exception $message) {
             return response()->json([
-                "Erreur :" => $message->getMessage(),
+                "error" => $message->getMessage(),
             ]);
         }
 
@@ -65,14 +65,14 @@ class CategoryController extends Controller
             ]);
 
             return response()->json([
-                'Message' => "Category modifié avec success",
-                'Category :' => $category ,
+                'message' => "Category modifié avec success",
+                'category :' => $category ,
             ], 201);
 
         } catch (\Exception $message) {
             return response()->json([
-                'Erreur : ' => $message->getMessage(),
-            ], 403);
+                'error' => $message->getMessage(),
+            ], 500);
         }
     }
 
@@ -81,11 +81,13 @@ class CategoryController extends Controller
     {
         try {
             $category->delete();
-            return response()->json(["Message : " => "Category supprimé"], 200);
+            return response()->json([
+                "Message : " => "Category supprimé"
+            ], 200);
         } catch (\Exception $message) {
             return response()->json([
-                'Erreur : ' => $message->getMessage(),
-            ], 403);
+                'error' => $message->getMessage(),
+            ], 500);
         }
     }
 
