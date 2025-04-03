@@ -19,8 +19,8 @@ class CommentController extends Controller
         ], 200);
         } catch (\Exception $message) {
             return response()->json([
-                "Erreur : " => $message->getMessage(),
-            ]);
+                "error : " => $message->getMessage(),
+            ], 500);
         }
     }
 
@@ -40,8 +40,8 @@ class CommentController extends Controller
 
         } catch (\Exception $message) {
             return response()->json([
-                'Erreur : ' => $message->getMessage(),
-            ], 403);
+                'error' => $message->getMessage(),
+            ], 500);
         }
     }
 
@@ -51,7 +51,7 @@ class CommentController extends Controller
         try {
             return response()->json(new CommentResource($comment), 200);
         } catch (\Exception $message) {
-            return response()->json(["Erreur :" => $message->getMessage()], 403);
+            return response()->json(["error" => $message->getMessage()], 500);
         }
 
     }
@@ -62,7 +62,7 @@ class CommentController extends Controller
         try {
             if (auth()->user()->id !==  $comment->user_id){
                 return response()->json([
-                    'Erreur :' => 'Seul l utilisateur peut modifier ce commentaire'
+                    'error:' => 'Seul l utilisateur peut modifier ce commentaire'
                 ]);
             }
             $comment->update([
@@ -86,15 +86,15 @@ class CommentController extends Controller
         try {
             if (auth()->user()->id !==  $comment->user_id){
                 return response()->json([
-                    'Erreur :' => 'Seul l utilisateur peut supprimer ce commentaire'
+                    'error' => 'Seul l utilisateur peut supprimer ce commentaire'
                 ]);
             }
             $comment->delete();
             return response()->json(["Message" => "Commentaire supprimé"], 200);
         } catch (\Exception $message) {
             return response()->json([
-                'Erreur : ' => $message->getMessage(),
-            ], 403);
+                'error' => $message->getMessage(),
+            ], 500);
         }
 
     }
@@ -108,7 +108,7 @@ class CommentController extends Controller
 
         } catch (\Exception $message) {
             return response()->json([
-                'Erreur' => $message->getMessage(),
+                'error' => $message->getMessage(),
             ], 500);
         }
     }

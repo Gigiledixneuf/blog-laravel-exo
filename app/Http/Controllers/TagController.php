@@ -23,7 +23,7 @@ class TagController extends Controller
         }
         catch (\Exception $message) {
             return response()->json([
-                'Ereur' => $message->getMessage(),
+                'error' => $message->getMessage(),
             ], 500);
         }
 
@@ -46,7 +46,7 @@ class TagController extends Controller
         }
         catch (\Exception $message) {
             return response()->json([
-                'Ereur' => $message->getMessage(),
+                'error' => $message->getMessage(),
             ], 500);
         }
 
@@ -62,7 +62,7 @@ class TagController extends Controller
         }
         catch (\Exception $message) {
             return response()->json([
-                'Ereur' => $message->getMessage(),
+                'error' => $message->getMessage(),
             ], 500);
         }
 
@@ -85,7 +85,7 @@ class TagController extends Controller
         }
         catch (\Exception $message) {
             return response()->json([
-                'Ereur' => $message->getMessage(),
+                'error' => $message->getMessage(),
             ], 500);
         }
 
@@ -102,7 +102,7 @@ class TagController extends Controller
         }
         catch (\Exception $message) {
             return response()->json([
-                'Ereur' => $message->getMessage(),
+                'error' => $message->getMessage(),
             ], 500);
         }
 
