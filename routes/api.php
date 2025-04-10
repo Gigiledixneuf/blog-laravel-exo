@@ -20,6 +20,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/postOnecategory', [PostController::class, 'postsOfOneCategory']);
     Route::post('/likePost', [LikeController::class,'store']);
 
+    //Profil
+    Route::apiResource('/profils', \App\Models\Profil::class);
+
     //Gestion CRUD commentaires
     Route::apiResource('/comments', CommentController::class);
     Route::get('/commentOneUser', [CommentController::class, 'commentOfOneUser']);

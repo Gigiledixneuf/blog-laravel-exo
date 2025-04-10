@@ -49,7 +49,10 @@ class CommentController extends Controller
     public function show(Comment $comment)
     {
         try {
-            return response()->json(new CommentResource($comment), 200);
+            return response()->json(
+                [
+                'data' => new CommentResource($comment)
+                ], 200);
         } catch (\Exception $message) {
             return response()->json(["error" => $message->getMessage()], 500);
         }
